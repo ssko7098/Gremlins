@@ -2,6 +2,8 @@
 
 Welcome to the Gremlins Game! This project is developed as part of my INFO1113 (Object Oriented Programming) assignment, using the Java programming language with the Processing library for graphics, and Gradle as the dependency manager.
 
+__NOTE: Ensure you are using Java version 8 or lower. Otherwise, the application won't run.__ 
+
 ## Table of Contents
 - [Game Overview](#game-overview)
 - [Features](#features)
