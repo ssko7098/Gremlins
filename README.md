@@ -26,11 +26,11 @@ The Gremlins Game is a tile-based action game where players control a wizard who
 ## Setup and Installation
 1. Clone this repository:
    ```bash
-   git clone https://github.com/your-username/gremlins-game.git
+   git clone https://github.com/ssko7098/Gremlins.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd gremlins-game
+   cd Gremlins
    ```
 3. Install dependencies using Gradle:
    ```bash
