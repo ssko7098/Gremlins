@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Entity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">Entity.java</span></div><h1>Entity.java</h1><pre class="source lang-java linenums">package gremlins;
+
+public class Entity extends Object{
+    
+    protected int targetX, targetY;
+
+    public Entity(int x, int y, Map level, App app) {
+<span class="fc" id="L8">        super(x, y, level, app);</span>
+<span class="fc" id="L9">    }</span>
+
+    /**
+     * Increments the player's current position closer to the target position
+     */
+    public void move() {
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        if(this.movingDirection == &quot;right&quot;) {</span>
+<span class="fc bfc" id="L16" title="All 2 branches covered.">            if(this.x &lt; this.targetX) {</span>
+<span class="fc" id="L17">                this.x += speed;</span>
+            }
+        }
+<span class="fc bfc" id="L20" title="All 2 branches covered.">        else if(this.movingDirection == &quot;left&quot;) {</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">            if(this.x &gt; this.targetX) {</span>
+<span class="fc" id="L22">                this.x -= speed;</span>
+            }
+        }
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        else if(this.movingDirection == &quot;up&quot;) {</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">            if(this.y &gt; this.targetY) {</span>
+<span class="fc" id="L27">                this.y -= speed;</span>
+            }
+        }
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        else if(this.movingDirection == &quot;down&quot;) {</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">            if(this.y &lt; this.targetY) {</span>
+<span class="fc" id="L32">                this.y += speed;</span>
+            }
+        }
+<span class="fc" id="L35">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

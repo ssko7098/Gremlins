@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Portal.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">Portal.java</span></div><h1>Portal.java</h1><pre class="source lang-java linenums">package gremlins;
+
+import processing.core.PImage;
+
+public class Portal extends Projectile{
+
+    /**
+     * Marks whether the portal is moving
+     */
+<span class="fc" id="L10">    public boolean isMoving = true;</span>
+
+    /**
+     * The sprite for a moving portal
+     */
+    public PImage ball;
+<span class="fc" id="L16">    protected int targetX = this.x;</span>
+<span class="fc" id="L17">    protected int targetY = this.y;</span>
+
+    /**
+     * The portal's current requested moving direction
+     */
+<span class="fc" id="L22">    public String requestedMovingDir = null;</span>
+
+    /**
+     * Marks whether the portal has been cast or not
+     */
+<span class="fc" id="L27">    public boolean isCast = true;</span>
+
+    public Portal(int x, int y, Map level, App app) {
+<span class="fc" id="L30">        super(x, y, level, app);</span>
+<span class="fc" id="L31">        this.movingDirection = null;</span>
+<span class="fc" id="L32">        this.board = level.map;</span>
+<span class="fc" id="L33">        this.speed = 4;</span>
+<span class="fc" id="L34">        this.sprite = app.loadImage(this.getClass().getResource(&quot;portal.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L35">        this.ball = app.loadImage(this.getClass().getResource(&quot;portal_ball.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L36">    }</span>
+
+    /**
+     * Set the portal's target position to the left
+     */
+    public void left() {
+<span class="fc" id="L42">             this.requestedMovingDir = &quot;left&quot;;</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">             if(requestedMovingDir == &quot;left&quot;) {</span>
+<span class="pc bpc" id="L44" title="1 of 4 branches missed.">                 if(!board[this.y/20][(this.x-20)/20].equals(&quot;X&quot;) &amp;&amp; !board[this.y/20][(this.x-20)/20].equals(&quot;B&quot;)) {</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">                     if(this.x%20 != 0) {</span>
+<span class="nc" id="L46">                         targetX = this.x - 20 + this.x%20;</span>
+                     }
+                     else {
+<span class="fc" id="L49">                         targetX = this.x - 20;</span>
+                     }
+<span class="fc" id="L51">                     this.requestedMovingDir = &quot;idle&quot;;</span>
+                 }
+                 else{
+<span class="fc" id="L54">                    this.collided = true;</span>
+                 }
+<span class="fc" id="L56">                 this.movingDirection = &quot;left&quot;;</span>
+             }  
+<span class="fc" id="L58">     }</span>
+ 
+     /**
+      * Set the portal's target position to the right
+      */
+     public void right() {
+<span class="fc" id="L64">             this.requestedMovingDir = &quot;right&quot;;</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">             if(requestedMovingDir == &quot;right&quot;) {</span>
+<span class="pc bpc" id="L66" title="1 of 4 branches missed.">                 if(!board[this.y/20][(this.x+20)/20].equals(&quot;X&quot;) &amp;&amp; !board[this.y/20][(this.x+20)/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">                     if(this.x%20 != 0) {</span>
+<span class="fc" id="L68">                         targetX = this.x + 20 - this.x%20; </span>
+                     }
+                     else {
+<span class="fc" id="L71">                         targetX = this.x + 20;</span>
+                     }
+<span class="fc" id="L73">                     this.requestedMovingDir = &quot;idle&quot;;</span>
+                 }
+                 else{
+<span class="fc" id="L76">                    this.collided = true;</span>
+                 }
+<span class="fc" id="L78">                 this.movingDirection = &quot;right&quot;;</span>
+             }
+<span class="fc" id="L80">     }</span>
+ 
+     /**
+      * Set the portal's target position upwards
+      */
+     public void up() {
+<span class="fc" id="L86">             this.requestedMovingDir = &quot;up&quot;;</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">             if(requestedMovingDir == &quot;up&quot;) {</span>
+<span class="fc bfc" id="L88" title="All 4 branches covered.">                 if(!board[(this.y-20)/20][this.x/20].equals(&quot;X&quot;) &amp;&amp; !board[(this.y-20)/20][this.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                     if(this.y%20 != 0) {</span>
+<span class="fc" id="L90">                         targetY = this.y - 20 + this.y%20; </span>
+                     }
+                     else {
+<span class="fc" id="L93">                         targetY = this.y - 20;</span>
+                     }
+<span class="fc" id="L95">                     this.requestedMovingDir = &quot;idle&quot;;</span>
+                 }
+                 else{
+<span class="fc" id="L98">                    this.collided = true;</span>
+                 }
+<span class="fc" id="L100">                 this.movingDirection = &quot;up&quot;;</span>
+             }
+<span class="fc" id="L102">     }</span>
+ 
+     /**
+      * Set the portal's target position downwards
+      */
+     public void down() {
+<span class="fc" id="L108">             this.requestedMovingDir = &quot;down&quot;;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">             if(requestedMovingDir == &quot;down&quot;) {</span>
+<span class="pc bpc" id="L110" title="1 of 4 branches missed.">                 if(!board[(this.y+20)/20][this.x/20].equals(&quot;X&quot;) &amp;&amp; !board[(this.y+20)/20][this.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">                     if(this.y%20 != 0) {</span>
+<span class="fc" id="L112">                         targetY = this.y + 20 - this.y%20; </span>
+                     }
+                     else {
+<span class="fc" id="L115">                         targetY = this.y + 20;</span>
+                     }
+<span class="fc" id="L117">                     this.requestedMovingDir = &quot;idle&quot;;</span>
+                 }
+                 else{
+<span class="fc" id="L120">                    this.collided = true;</span>
+                 }
+<span class="fc" id="L122">                 this.movingDirection = &quot;down&quot;;</span>
+             }
+<span class="fc" id="L124">     }</span>
+
+     /**
+      * Increment the portal's current position towards the target position
+      */
+     public void move() {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">        if(this.movingDirection == &quot;right&quot;) {</span>
+<span class="fc bfc" id="L131" title="All 4 branches covered.">            if(this.x &lt; this.targetX &amp;&amp; this.x + speed &lt; this.targetX) {</span>
+<span class="fc" id="L132">                this.x += speed;</span>
+            }
+<span class="fc bfc" id="L134" title="All 2 branches covered.">            else if (this.x &lt; this.targetX) {</span>
+<span class="fc" id="L135">                this.x += targetX - this.x;</span>
+            }
+        }
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        else if(this.movingDirection == &quot;left&quot;) {</span>
+<span class="fc bfc" id="L139" title="All 4 branches covered.">            if(this.x &gt; this.targetX &amp;&amp; this.x - speed &gt; this.targetX) {</span>
+<span class="fc" id="L140">                this.x -= speed;</span>
+            }
+<span class="fc bfc" id="L142" title="All 2 branches covered.">            else if(this.x &gt; targetX) {</span>
+<span class="fc" id="L143">                this.x -= this.x - targetX;</span>
+            }
+        }
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        else if(this.movingDirection == &quot;up&quot;) {</span>
+<span class="fc bfc" id="L147" title="All 4 branches covered.">            if(this.y &gt; this.targetY &amp;&amp; this.y - speed &gt; this.targetY) {</span>
+<span class="fc" id="L148">                this.y -= speed;</span>
+            }
+<span class="fc bfc" id="L150" title="All 2 branches covered.">            else if(this.y &gt; targetY) {</span>
+<span class="fc" id="L151">                this.y -= this.y - targetY;</span>
+            }
+        }
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">        else if(this.movingDirection == &quot;down&quot;) {</span>
+<span class="pc bpc" id="L155" title="1 of 4 branches missed.">            if(this.y &lt; this.targetY &amp;&amp; this.y + speed &lt; this.targetY) {</span>
+<span class="fc" id="L156">                this.y += speed;</span>
+            }
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">            else if(this.y &lt; this.targetY) {</span>
+<span class="nc" id="L159">                this.y += targetY - this.y;</span>
+            }
+        }
+<span class="fc" id="L162">    }</span>
+
+    /**
+     * Draw the portals by the current frame
+     * @param app where to draw the portals
+     */
+    public void draw(App app) {
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if(this.isCast) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">            if(this.movingDirection == &quot;right&quot;) {</span>
+<span class="fc" id="L171">                this.right();</span>
+            }
+<span class="fc bfc" id="L173" title="All 2 branches covered.">            else if(this.movingDirection == &quot;left&quot;) {</span>
+<span class="fc" id="L174">                this.left();</span>
+            }
+<span class="fc bfc" id="L176" title="All 2 branches covered.">            else if(this.movingDirection == &quot;down&quot;) {</span>
+<span class="fc" id="L177">                this.down();</span>
+            }
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">            else if(this.movingDirection == &quot;up&quot;) {</span>
+<span class="fc" id="L180">                this.up();</span>
+            }
+    
+<span class="fc" id="L183">            this.move();</span>
+    
+<span class="fc bfc" id="L185" title="All 2 branches covered.">            if(this.collided == false){</span>
+<span class="fc" id="L186">                app.image(this.ball, this.x, this.y);</span>
+            }
+            else{
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">                if(this.targetX%20 != 0) {</span>
+<span class="nc" id="L190">                    this.targetX = this.targetX - this.targetX%20;</span>
+                }
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">                else if(this.targetY%20 != 0) {</span>
+<span class="nc" id="L193">                    this.targetY = this.targetY - this.targetY%20;</span>
+                }
+<span class="fc" id="L195">                app.image(this.sprite, this.x, this.y);</span>
+            }
+        }
+<span class="fc" id="L198">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

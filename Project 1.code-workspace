@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.ignoreMissingGitWarning": false,
+		"search.useGlobalIgnoreFiles": false,
+		"editor.showUnused": true,
+		"problems.decorations.enabled": true,
+		"problems.showCurrentInStatus": false
+	}
+}

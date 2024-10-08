@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>App.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">App.java</span></div><h1>App.java</h1><pre class="source lang-java linenums">package gremlins;
+
+import processing.core.PApplet;
+import processing.core.PImage;
+import processing.data.JSONObject;
+import processing.data.JSONArray;
+import processing.event.KeyEvent;
+
+import java.util.ArrayList;
+import java.io.*;
+
+public class App extends PApplet {
+
+    /**
+     * The width of the screen
+     */
+    public static final int WIDTH = 720;
+
+    /**
+     * The height of the screen
+     */
+    public static final int HEIGHT = 720;
+
+    /**
+     * The frame rate
+     */
+    public static final int FPS = 60;
+
+    /**
+     * The name of the JSON file
+     */
+    public String configPath;
+
+    /**
+     * The wizard's generic sprite
+     */
+    public PImage wizard;
+
+    /**
+     * The player
+     */
+    public Player player;
+
+    /**
+     * The game board
+     */
+    public Map level;
+
+    /**
+     * The wizard's start tile
+     */
+    public int[] wizardTile;
+    
+    /**
+     * An array of current gremlins
+     */
+    public GremlinManager gremlins;
+
+    /**
+     * The name of the first level from the JSON file
+     */
+    public String level1Name;
+
+    /**
+     * The first level's wizard cooldown from the JSON file
+     */
+    public Double level1WizardCooldown;
+
+    /**
+     * The first level's enemy cooldown from the JSON file
+     */
+    public Double level1EnemyCooldown;
+
+    /**
+     * The name of the second level from the JSON level
+     */
+    public String level2Name;
+
+    /**
+     * The second level's wizard cooldown from JSON file 
+     */
+    public Double level2WizardCooldown;
+
+    /**
+     * The second level's enemy cooldown from JSON file
+     */
+    public Double level2EnemyCooldown;
+
+    /**
+     * The powerup related to invincibility
+     */
+    public Powerup invincibility;
+
+    /**
+     * The powerup's start tile on the map
+     */
+    public int[] invincibleTile;
+
+    /**
+     * The current enemy cooldown
+     */
+    public Double currentEnemyCooldown;
+
+    /**
+     * The current wizard cooldown
+     */
+    public Double currentWizardCooldown;
+
+    /**
+     * Marks which key has been pressed
+     */
+    public boolean right, left, up, down, space, sKey;
+
+<span class="fc" id="L114">    public App() {</span>
+<span class="fc" id="L115">        this.configPath = &quot;config.json&quot;;</span>
+<span class="fc" id="L116">    }</span>
+
+    /**
+     * Initialise the setting of the window size.
+    */
+    public void settings() {
+<span class="fc" id="L122">        size(WIDTH, HEIGHT);</span>
+<span class="fc" id="L123">    }</span>
+
+    /**
+     * Load all resources such as images. Initialise the elements such as the player, enemies and map elements.
+    */
+    public void setup() {
+<span class="fc" id="L129">        frameRate(FPS);</span>
+
+<span class="fc" id="L131">        JSONObject conf = loadJSONObject(new File(this.configPath));</span>
+<span class="fc" id="L132">        ArrayList&lt;String&gt; levels = new ArrayList&lt;String&gt;();</span>
+<span class="fc" id="L133">        ArrayList&lt;Double&gt; wizardCooldown = new ArrayList&lt;Double&gt;();</span>
+<span class="fc" id="L134">        ArrayList&lt;Double&gt; enemyCooldown = new ArrayList&lt;Double&gt;();</span>
+<span class="fc" id="L135">        JSONArray arr = conf.getJSONArray(&quot;levels&quot;);</span>
+        
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for(int i=0; i&lt;arr.size(); i++){</span>
+<span class="fc" id="L138">            levels.add(arr.getJSONObject(i).getString(&quot;layout&quot;));</span>
+<span class="fc" id="L139">            wizardCooldown.add(arr.getJSONObject(i).getDouble(&quot;wizard_cooldown&quot;));</span>
+<span class="fc" id="L140">            enemyCooldown.add(arr.getJSONObject(i).getDouble(&quot;enemy_cooldown&quot;));</span>
+        }
+
+<span class="fc" id="L143">        level1Name = levels.get(0);</span>
+<span class="fc" id="L144">        level1WizardCooldown = wizardCooldown.get(0);</span>
+<span class="fc" id="L145">        level1EnemyCooldown = enemyCooldown.get(0);</span>
+
+<span class="fc" id="L147">        level2Name = levels.get(1);</span>
+<span class="fc" id="L148">        level2WizardCooldown = wizardCooldown.get(1);</span>
+<span class="fc" id="L149">        level2EnemyCooldown = enemyCooldown.get(1);</span>
+
+        // Load objects during setup
+        try {
+<span class="fc" id="L153">            level = new Map(this, level1Name);</span>
+<span class="fc" id="L154">            level.loadMap();</span>
+<span class="fc" id="L155">            currentEnemyCooldown = level1EnemyCooldown;</span>
+<span class="fc" id="L156">            currentWizardCooldown = level1WizardCooldown;</span>
+<span class="fc" id="L157">            wizardTile = level.getWizardTile();</span>
+<span class="fc" id="L158">            player = new Player(wizardTile[0]*20, wizardTile[1]*20, this, level, currentWizardCooldown);</span>
+<span class="fc" id="L159">            wizard = this.loadImage(this.getClass().getResource(&quot;wizard1.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L160">            gremlins = new GremlinManager(level);</span>
+<span class="fc" id="L161">            gremlins.loadGremlins(this, currentEnemyCooldown);</span>
+<span class="fc" id="L162">            invincibleTile = level.getInvincibleTile();</span>
+<span class="fc" id="L163">            invincibility = new Powerup(invincibleTile[0], invincibleTile[1], level, this);</span>
+
+<span class="fc" id="L165">        } catch (Exception e) {</span>
+<span class="fc" id="L166">            System.out.println(&quot;Could not locate resource file path.&quot;);</span>
+<span class="fc" id="L167">            e.printStackTrace();</span>
+<span class="fc" id="L168">        }</span>
+<span class="fc" id="L169">    }</span>
+
+    /**
+     * Receive key pressed signal from the keyboard.
+    */
+    @Override
+    public void keyPressed(KeyEvent e){
+<span class="fc" id="L176">        int key = e.getKeyCode();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (key == 37) { //left arrow</span>
+<span class="fc" id="L178">            left = true;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">        } else if (key == 39) { //right arrow</span>
+<span class="fc" id="L180">            right = true;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        } else if (key == 38) { //up arrow</span>
+<span class="fc" id="L182">            up = true;</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        } else if (key == 40) { //down arrow</span>
+<span class="fc" id="L184">            down = true;</span>
+<span class="pc bpc" id="L185" title="1 of 4 branches missed.">        } else if (key == 32 &amp;&amp; player.counter &gt;= 150) { //space bar</span>
+<span class="fc" id="L186">            space = true;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        } if(key == 83) { //s key</span>
+<span class="fc" id="L188">            player.portalCounter ++;</span>
+<span class="fc" id="L189">            player.shootPortal(this);</span>
+        }
+<span class="fc" id="L191">    }</span>
+    
+    /**
+     * Receive key released signal from the keyboard.
+    */
+    @Override 
+    public void keyReleased(KeyEvent e){
+<span class="fc" id="L198">        int key = e.getKeyCode();</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        if (key == 37) { //left arrow</span>
+<span class="fc" id="L200">            left = false;</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        } else if (key == 39) { //right arrow</span>
+<span class="fc" id="L202">            right = false;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        } else if (key == 38) { //up arrow</span>
+<span class="fc" id="L204">            up = false;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        } else if (key == 40) { //down arrow</span>
+<span class="fc" id="L206">            down = false;</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">        } else if(key == 32) {</span>
+<span class="fc" id="L208">            space = false;</span>
+        }
+<span class="fc" id="L210">    }</span>
+
+    /**
+     * Reset's everything when the player loses a life
+     */
+    public void loseLife() {
+<span class="fc" id="L216">        player.lives -= 1;</span>
+<span class="fc" id="L217">        player.respawn();</span>
+<span class="fc" id="L218">        level.loadMap();</span>
+<span class="fc" id="L219">        gremlins.reset(currentEnemyCooldown);</span>
+<span class="fc" id="L220">    }</span>
+
+    /**
+     * Draw all elements in the game by current frame. 
+	 */
+    public void draw() {
+<span class="fc" id="L226">        background(194, 153, 114);</span>
+<span class="fc" id="L227">        textSize(15);</span>
+<span class="fc" id="L228">        this.fill(0, 0, 0);</span>
+<span class="fc" id="L229">        this.text(&quot;Lives: &quot;, 10, 690);</span>
+
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        if(level.filename.equals(&quot;level1.txt&quot;)){</span>
+<span class="fc" id="L232">            this.text(&quot;Level 1/2&quot;, 160, 690 );</span>
+        }
+<span class="pc bpc" id="L234" title="1 of 2 branches missed.">        else if(level.filename.equals(&quot;level2.txt&quot;)){</span>
+<span class="fc" id="L235">            this.text(&quot;Level 2/2&quot;, 160, 690);</span>
+        }
+
+<span class="fc" id="L238">        int countdown = 10 - invincibility.counter/60;</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if(invincibility.collected == true) {</span>
+<span class="fc" id="L240">            this.text(&quot;Invincibility Remaining: &quot; + countdown + &quot; seconds&quot;, 270, 690);</span>
+        }
+        else{
+<span class="fc" id="L243">            this.text(&quot;Press s to shoot portal&quot;, 270, 690);</span>
+        }
+
+<span class="fc bfc" id="L246" title="All 2 branches covered.">        if(countdown == 0) {</span>
+<span class="fc" id="L247">            player.invincible = false;</span>
+        }
+
+        //drawing objects
+<span class="fc" id="L251">        level.draw(this);</span>
+<span class="fc" id="L252">        invincibility.draw(this);</span>
+<span class="fc" id="L253">        player.draw(this);</span>
+<span class="fc" id="L254">        gremlins.draw(this);</span>
+
+        //whether player is moving or not
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if(up == true) {</span>
+<span class="fc" id="L258">            player.up();</span>
+        }
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        else if(down == true){</span>
+<span class="fc" id="L261">            player.down();</span>
+        }
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        else if(right == true) {</span>
+<span class="fc" id="L264">            player.right();</span>
+        }
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        else if(left == true) {</span>
+<span class="fc" id="L267">            player.left();</span>
+        }
+<span class="fc bfc" id="L269" title="All 4 branches covered.">        if(space == true &amp;&amp; player.counter &gt;= 150) {</span>
+<span class="fc" id="L270">            player.shootFireball(this);</span>
+        }
+
+        //if player goes through a portal
+<span class="fc bfc" id="L274" title="All 2 branches covered.">        if(player.portals.size() == 2) {</span>
+<span class="fc" id="L275">            Portal p1 = player.portals.get(0);</span>
+<span class="fc" id="L276">            Portal p2 = player.portals.get(1);</span>
+
+<span class="pc bpc" id="L278" title="3 of 10 branches missed.">            if(player.x == p1.x &amp;&amp; player.y == p1.y &amp;&amp; p2.collided == true &amp;&amp; p1.isCast == true &amp;&amp; p2.isCast == true) {</span>
+                
+<span class="fc bfc" id="L280" title="All 2 branches covered.">                if(player.movingDirection == &quot;right&quot;) {</span>
+<span class="pc bpc" id="L281" title="2 of 4 branches missed.">                    if(!p2.board[p2.y/20][(p2.x+20)/20].equals(&quot;X&quot;) &amp;&amp; !p2.board[p2.y/20][(p2.x+20)/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L282">                        player.x = p2.x;</span>
+<span class="fc" id="L283">                        player.y = p2.y;</span>
+<span class="fc" id="L284">                        player.targetX = p2.x + 20;</span>
+<span class="fc" id="L285">                        player.targetY = p2.y;</span>
+                    }
+                }
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">                else if(player.movingDirection == &quot;left&quot;) {</span>
+<span class="nc bnc" id="L289" title="All 4 branches missed.">                    if(!p2.board[p2.y/20][(p2.x-20)/20].equals(&quot;X&quot;) &amp;&amp; !p2.board[p2.y/20][(p2.x-20)/20].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L290">                        player.x = p2.x;</span>
+<span class="nc" id="L291">                        player.y = p2.y;</span>
+<span class="nc" id="L292">                        player.targetX = p2.x - 20;</span>
+<span class="nc" id="L293">                        player.targetY = p2.y;</span>
+                    }
+                }
+<span class="fc bfc" id="L296" title="All 2 branches covered.">                else if(player.movingDirection == &quot;up&quot;) {</span>
+<span class="pc bpc" id="L297" title="2 of 4 branches missed.">                    if(!p2.board[(p2.y-20)/20][p2.x/20].equals(&quot;X&quot;) &amp;&amp; !p2.board[(p2.y-20)/20][p2.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L298">                        player.x = p2.x;</span>
+<span class="fc" id="L299">                        player.y = p2.y;</span>
+<span class="fc" id="L300">                        player.targetX = p2.x;</span>
+<span class="fc" id="L301">                        player.targetY = p2.y - 20;</span>
+                    }
+                }
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">                else if(player.movingDirection == &quot;down&quot;) {</span>
+<span class="pc bpc" id="L305" title="2 of 4 branches missed.">                    if(!p2.board[(p2.y+20)/20][p2.x/20].equals(&quot;X&quot;) &amp;&amp; !p2.board[(p2.y+20)/20][p2.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L306">                        player.x = p2.x;</span>
+<span class="fc" id="L307">                        player.y = p2.y;</span>
+<span class="fc" id="L308">                        player.targetX = p2.x;</span>
+<span class="fc" id="L309">                        player.targetY = p2.y + 20;</span>
+                    }
+                }
+            }
+<span class="pc bpc" id="L313" title="3 of 10 branches missed.">            else if(player.x == p2.x &amp;&amp; player.y == p2.y &amp;&amp; p1.collided == true &amp;&amp; p1.isCast == true &amp;&amp; p2.isCast == true) {</span>
+                
+<span class="pc bpc" id="L315" title="1 of 2 branches missed.">                if(player.movingDirection == &quot;right&quot;) {</span>
+<span class="nc bnc" id="L316" title="All 4 branches missed.">                    if(!p1.board[p1.y/20][(p1.x+20)/20].equals(&quot;X&quot;) &amp;&amp; !p1.board[p1.y/20][(p1.x+20)/20].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L317">                        player.x = p1.x;</span>
+<span class="nc" id="L318">                        player.y = p1.y;</span>
+<span class="nc" id="L319">                        player.targetX = p1.x + 20;</span>
+<span class="nc" id="L320">                        player.targetY = p1.y;</span>
+                    }
+                }
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">                else if(player.movingDirection == &quot;left&quot;) {</span>
+<span class="nc bnc" id="L324" title="All 4 branches missed.">                    if(!p1.board[p1.y/20][(p1.x-20)/20].equals(&quot;X&quot;) &amp;&amp; !p1.board[p1.y/20][(p1.x-20)/20].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L325">                        player.x = p1.x;</span>
+<span class="nc" id="L326">                        player.y = p1.y;</span>
+<span class="nc" id="L327">                        player.targetX = p1.x - 20;</span>
+<span class="nc" id="L328">                        player.targetY = p1.y;</span>
+                    }
+                }
+<span class="pc bpc" id="L331" title="1 of 2 branches missed.">                else if(player.movingDirection == &quot;up&quot;) {</span>
+<span class="pc bpc" id="L332" title="3 of 4 branches missed.">                    if(!p1.board[(p1.y-20)/20][p1.x/20].equals(&quot;X&quot;) &amp;&amp; !p1.board[(p1.y-20)/20][p1.x/20].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L333">                        player.x = p1.x;</span>
+<span class="nc" id="L334">                        player.y = p1.y;</span>
+<span class="nc" id="L335">                        player.targetX = p1.x;</span>
+<span class="nc" id="L336">                        player.targetY = p1.y - 20;</span>
+                    }
+                }
+<span class="nc bnc" id="L339" title="All 2 branches missed.">                else if(player.movingDirection == &quot;down&quot;) {</span>
+<span class="nc bnc" id="L340" title="All 4 branches missed.">                    if(!p1.board[(p1.y+20)/20][p1.x/20].equals(&quot;X&quot;) &amp;&amp; !p1.board[(p1.y+20)/20][p1.x/20].equals(&quot;B&quot;)) {</span>
+<span class="nc" id="L341">                        player.x = p1.x;</span>
+<span class="nc" id="L342">                        player.y = p1.y;</span>
+<span class="nc" id="L343">                        player.targetX = p1.x;</span>
+<span class="nc" id="L344">                        player.targetY = p1.y + 20;</span>
+                    }
+                }
+            }
+        }
+
+        //if player comes into contact with gremlin
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        for(int i=0; i&lt;gremlins.gremlins.size(); i++) {</span>
+<span class="pc bpc" id="L352" title="1 of 6 branches missed.">            if(player.x/20 == gremlins.gremlins.get(i).x/20 &amp;&amp; player.y/20 == gremlins.gremlins.get(i).y/20 &amp;&amp; player.invincible == false) {</span>
+<span class="fc" id="L353">                loseLife();</span>
+            }
+        }
+
+        //if player comes into contact with slime ball
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        for(int l=0; l&lt;gremlins.gremlins.size(); l++) {</span>
+<span class="fc" id="L359">            Gremlin g = gremlins.gremlins.get(l);</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">            if(g.slimes.size() &gt; 0) {</span>
+<span class="pc bpc" id="L361" title="1 of 6 branches missed.">                if(g.slimes.get(0).x/20 == player.x/20 &amp;&amp; g.slimes.get(0).y/20 == player.y/20 &amp;&amp; player.invincible == false) {</span>
+<span class="fc" id="L362">                    g.slimes.get(0).collided = true;</span>
+<span class="fc" id="L363">                    loseLife();</span>
+                }
+            }
+        }
+
+        //if player picks up powerup
+<span class="pc bpc" id="L369" title="1 of 4 branches missed.">        if(player.x == invincibility.x*20 &amp;&amp; player.y == invincibility.y*20) {</span>
+<span class="fc" id="L370">            invincibility.collected = true;</span>
+<span class="fc" id="L371">            player.invincible = true;</span>
+        }
+
+
+        //if fireball exterminates slime ball or kills gremlin 
+<span class="fc bfc" id="L376" title="All 2 branches covered.">        for(int j=0; j&lt;player.fireballs.size(); j++) {</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">            for(int y=0; y&lt;gremlins.gremlins.size(); y++) {</span>
+<span class="fc" id="L378">                Fireball f = player.fireballs.get(j);</span>
+<span class="fc" id="L379">                Gremlin g2 = gremlins.gremlins.get(y);</span>
+
+<span class="fc bfc" id="L381" title="All 4 branches covered.">                if(f.x/20 == g2.x/20 &amp;&amp; f.y/20 == g2.y/20) {</span>
+<span class="fc" id="L382">                    f.collided = true;</span>
+<span class="fc" id="L383">                    g2.respawn();</span>
+                }
+
+<span class="fc bfc" id="L386" title="All 2 branches covered.">                if(g2.slimes.size() &gt; 0) {</span>
+<span class="pc bpc" id="L387" title="2 of 4 branches missed.">                    if(g2.slimes.get(0).x/20 == f.x/20 &amp;&amp; g2.slimes.get(0).y/20 == f.y/20) {</span>
+<span class="fc" id="L388">                        g2.slimes.get(0).collided = true;</span>
+<span class="fc" id="L389">                        f.collided = true;</span>
+                    }
+                }
+            }
+        }
+
+        //if player reaches exit of first level
+<span class="fc bfc" id="L396" title="All 4 branches covered.">        if(level.map[player.y/20][player.x/20].equals(&quot;E&quot;) &amp;&amp; level.filename.equals(level1Name)) {</span>
+<span class="fc" id="L397">            level.filename = level2Name;</span>
+<span class="fc" id="L398">            level.loadMap();</span>
+<span class="fc" id="L399">            player.level = level;</span>
+<span class="fc" id="L400">            this.currentEnemyCooldown = level2EnemyCooldown;</span>
+<span class="fc" id="L401">            this.currentWizardCooldown = level2WizardCooldown;</span>
+<span class="fc" id="L402">            player.respawn();</span>
+<span class="fc" id="L403">            player.cooldown = currentWizardCooldown;</span>
+
+<span class="pc bpc" id="L405" title="1 of 2 branches missed.">            for(int i=0; i&lt;player.fireballs.size(); i++) {</span>
+<span class="nc" id="L406">                player.fireballs.get(i).collided = true;</span>
+            }
+            
+<span class="fc bfc" id="L409" title="All 2 branches covered.">            for(int j=0; j&lt;gremlins.gremlins.size(); j++) {</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">                if(gremlins.gremlins.get(j).slimes.size() == 1) {</span>
+<span class="nc" id="L411">                    gremlins.gremlins.get(j).slimes.get(0).collided = true;</span>
+                }
+            }
+            
+<span class="fc" id="L415">            gremlins.restart();</span>
+<span class="fc" id="L416">            gremlins.level = this.level;</span>
+<span class="fc" id="L417">            gremlins.gremlinTiles = level.getGremlinTiles();</span>
+<span class="fc" id="L418">            gremlins.loadGremlins(this, currentEnemyCooldown);</span>
+<span class="fc" id="L419">            invincibility.x = level.getInvincibleTile()[0];</span>
+<span class="fc" id="L420">            invincibility.y = level.getInvincibleTile()[1];</span>
+<span class="fc" id="L421">            invincibility.firstCooldown = 0;</span>
+<span class="fc" id="L422">            player.invincible = false;</span>
+<span class="fc" id="L423">            invincibility.collected = false;</span>
+        }
+
+        //displaying number of lives
+<span class="fc bfc" id="L427" title="All 2 branches covered.">        if(player.lives == 3) {</span>
+<span class="fc" id="L428">            image(wizard, 55, 675);</span>
+<span class="fc" id="L429">            image(wizard, 75, 675);</span>
+<span class="fc" id="L430">            image(wizard, 95, 675);</span>
+        }
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        else if(player.lives == 2) {</span>
+<span class="fc" id="L433">            image(wizard, 55, 675);</span>
+<span class="fc" id="L434">            image(wizard, 75, 675);</span>
+        }
+<span class="fc bfc" id="L436" title="All 2 branches covered.">        else if(player.lives == 1) {</span>
+<span class="fc" id="L437">            image(wizard, 55, 675);</span>
+        }
+<span class="fc bfc" id="L439" title="All 2 branches covered.">        else if(player.lives == 0) {</span>
+            //if player has no lives left
+<span class="fc" id="L441">            textSize(40);</span>
+<span class="fc" id="L442">            this.fill(0, 0, 0);</span>
+<span class="fc" id="L443">            this.rect(0, 0, WIDTH, HEIGHT);</span>
+<span class="fc" id="L444">            this.fill(255, 255, 255);</span>
+<span class="fc" id="L445">            this.text(&quot;Game Over.&quot;, 250, 300);</span>
+<span class="fc" id="L446">            this.noLoop();</span>
+        }
+
+<span class="pc bpc" id="L449" title="1 of 4 branches missed.">        if(level.map[player.y/20][player.x/20].equals(&quot;E&quot;) &amp;&amp; level.filename.equals(level2Name)) {</span>
+            //display player wins screen
+<span class="fc" id="L451">            textSize(40);</span>
+<span class="fc" id="L452">            this.fill(0, 0, 0);</span>
+<span class="fc" id="L453">            this.rect(0, 0, WIDTH, HEIGHT);</span>
+<span class="fc" id="L454">            this.fill(255, 255, 255);</span>
+<span class="fc" id="L455">            this.text(&quot;Player Wins!&quot;, 250, 300);</span>
+<span class="fc" id="L456">            this.noLoop();</span>
+        }
+<span class="fc" id="L458">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L461">        PApplet.main(&quot;gremlins.App&quot;);</span>
+<span class="nc" id="L462">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

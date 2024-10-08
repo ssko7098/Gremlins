@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Powerup.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">Powerup.java</span></div><h1>Powerup.java</h1><pre class="source lang-java linenums">package gremlins;
+
+public class Powerup extends Object{
+
+    /**
+     * The counter for the powerup's cooldown
+     */
+<span class="fc" id="L8">    public int counter = 0;</span>
+
+    /**
+     * Marks whether the powerup has been picked up by the player
+     */
+<span class="fc" id="L13">    public boolean collected = false;</span>
+
+    /**
+     * The powerup's cooldown length
+     */
+    public int cooldown;
+
+    /**
+     * The powerup's starting cooldown time (within 10 seconds)
+     */
+    public int firstCooldown;
+    
+    public Powerup(int x, int y, Map level, App app) {
+<span class="fc" id="L26">        super(x, y, level, app);</span>
+<span class="fc" id="L27">        this.sprite = app.loadImage(this.getClass().getResource(&quot;spell_book.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L28">        this.board = level.map;</span>
+<span class="fc" id="L29">        this.cooldown = 10;</span>
+<span class="fc" id="L30">        this.firstCooldown = 0;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Reset the powerup
+     */
+    public void respawn() {
+<span class="fc" id="L37">        this.collected = false;</span>
+<span class="fc" id="L38">    }</span>
+
+    /**
+     * Draw the powerup by the current frame
+     * @param app where to draw the powerup
+     */
+    public void draw(App app) {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if(this.collected == false) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">            if(firstCooldown &gt; 5*60) {</span>
+<span class="fc" id="L47">                app.image(this.sprite, this.x*20, this.y*20);</span>
+            }
+        }
+        else{
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            if(counter == cooldown*60) {</span>
+<span class="fc" id="L52">                respawn();</span>
+<span class="fc" id="L53">                counter = 0;</span>
+            }
+<span class="fc" id="L55">            counter ++;</span>
+        }
+<span class="fc" id="L57">        firstCooldown ++;</span>
+<span class="fc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gremlin.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">Gremlin.java</span></div><h1>Gremlin.java</h1><pre class="source lang-java linenums">package gremlins;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class Gremlin extends Entity{
+    
+    /**
+     * An array of gremlins in the game
+     */
+<span class="fc" id="L12">    public ArrayList&lt;Gremlin&gt; gremlins = new ArrayList&lt;Gremlin&gt;();</span>
+
+    /**
+     * A new random object
+     */
+<span class="fc" id="L17">    public Random random = new Random();</span>
+
+    /**
+     * Randomly sets the gremlin's current direction
+     * 1 = UP, 2 = DOWN, 3 = RIGHT, 4 = LEFT
+     */
+<span class="fc" id="L23">    public int direction = ThreadLocalRandom.current().nextInt(1, 5);</span>
+
+    /**
+     * An array of slime balls
+     */
+<span class="fc" id="L28">    public ArrayList&lt;SlimeBall&gt; slimes = new ArrayList&lt;SlimeBall&gt;();</span>
+
+    /**
+     * The current enemy cooldown
+     */
+    public Double enemyCooldown;
+
+    /**
+     * A counter for when to shoot slime balls
+     */
+    public int counter;
+    
+    public Gremlin(int x, int y, App app, Map level, Double enemyCooldown) {
+<span class="fc" id="L41">        super(0, 0, level, app);</span>
+<span class="fc" id="L42">        this.board = level.map;</span>
+<span class="fc" id="L43">        this.level = level;</span>
+<span class="fc" id="L44">        this.sprite = app.loadImage(this.getClass().getResource(&quot;gremlin.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L45">        speed = 1;</span>
+<span class="fc" id="L46">        this.enemyCooldown = enemyCooldown;</span>
+<span class="fc" id="L47">        this.counter = 0;</span>
+<span class="fc" id="L48">    }</span>
+
+    /**
+     * Sets the gremlin's current direction using the random object
+     */
+    public void setDirection() {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if(direction == 1) {</span>
+<span class="fc bfc" id="L55" title="All 4 branches covered.">            if(!board[(this.y-20)/20][this.x/20].equals(&quot;X&quot;) &amp;&amp; !board[(this.y-20)/20][this.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                if(this.y%20 != 0) {</span>
+<span class="fc" id="L57">                    targetY = this.y - 20 + this.y%20; </span>
+                }
+                else {
+<span class="fc" id="L60">                    targetY = this.y - 20;</span>
+                }
+<span class="fc" id="L62">                this.movingDirection = &quot;up&quot;;</span>
+            }
+<span class="pc bpc" id="L64" title="1 of 4 branches missed.">            else if(this.x%20 == 0 &amp;&amp; this.y%20 == 0){</span>
+<span class="fc" id="L65">                this.direction = ThreadLocalRandom.current().nextInt(3, 5);</span>
+            }
+        }
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        else if(direction == 2) {</span>
+<span class="fc bfc" id="L69" title="All 4 branches covered.">            if(!board[(this.y+20)/20][this.x/20].equals(&quot;X&quot;) &amp;&amp; !board[(this.y+20)/20][this.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">                if(this.y%20 != 0) {</span>
+<span class="fc" id="L71">                    targetY = this.y + 20 - this.y%20; </span>
+                }
+                else {
+<span class="fc" id="L74">                    targetY = this.y + 20;</span>
+                }
+<span class="fc" id="L76">                this.movingDirection = &quot;down&quot;;</span>
+            }
+<span class="pc bpc" id="L78" title="2 of 4 branches missed.">            else if(this.x%20 == 0 &amp;&amp; this.y%20 == 0){</span>
+<span class="fc" id="L79">                this.direction = ThreadLocalRandom.current().nextInt(3, 5);</span>
+            }
+        }
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        else if(direction == 3) {</span>
+<span class="fc bfc" id="L83" title="All 4 branches covered.">            if(!board[this.y/20][(this.x+20)/20].equals(&quot;X&quot;) &amp;&amp; !board[this.y/20][(this.x+20)/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">                if(this.x%20 != 0) {</span>
+<span class="fc" id="L85">                    targetX = this.x + 20 - this.x%20; </span>
+                }
+                else {
+<span class="fc" id="L88">                    targetX = this.x + 20;</span>
+                }
+<span class="fc" id="L90">                this.movingDirection = &quot;right&quot;;</span>
+            }
+<span class="pc bpc" id="L92" title="2 of 4 branches missed.">            else if(this.x%20 == 0 &amp;&amp; this.y%20 == 0){</span>
+<span class="fc" id="L93">                this.direction = ThreadLocalRandom.current().nextInt(1, 3);</span>
+            }
+        }
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">        else if(direction == 4) {</span>
+<span class="fc bfc" id="L97" title="All 4 branches covered.">            if(!board[this.y/20][(this.x-20)/20].equals(&quot;X&quot;) &amp;&amp; !board[this.y/20][(this.x-20)/20].equals(&quot;B&quot;)) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                if(this.x%20 != 0) {</span>
+<span class="fc" id="L99">                    targetX = this.x - 20 + this.x%20; </span>
+                }
+                else {
+<span class="fc" id="L102">                    targetX = this.x - 20;</span>
+                }
+<span class="fc" id="L104">                this.movingDirection = &quot;left&quot;;</span>
+            }
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">            else if(this.x%20 == 0 &amp;&amp; this.y%20 == 0){</span>
+<span class="fc" id="L107">                this.direction = ThreadLocalRandom.current().nextInt(1, 3);</span>
+            }
+        }
+<span class="fc" id="L110">    }</span>
+
+    /**
+     * Creates a new slime ball object for the gremlin
+     * @param app where to draw the slime ball
+     */
+    public void shootSlime(App app) {
+<span class="fc" id="L117">        SlimeBall s = new SlimeBall(this.x, this.y, app, this.level);</span>
+<span class="fc" id="L118">        s.movingDirection = this.movingDirection;</span>
+<span class="fc" id="L119">        slimes.add(s);</span>
+<span class="fc" id="L120">    }</span>
+
+    /**
+     * Respawn the gremlin once it is vaporised.
+     */
+    public void respawn() {
+<span class="fc" id="L126">        int newx = random.nextInt(36)*20;</span>
+<span class="fc" id="L127">        int newy = random.nextInt(33)*20;</span>
+
+<span class="fc" id="L129">        Double distance = Math.sqrt((newx/20 - app.player.x/20)*(newx/20 - app.player.x/20) + (newy/20 - app.player.y/20)*(newy/20 - app.player.y/20));</span>
+
+<span class="pc bpc" id="L131" title="3 of 6 branches missed.">        if(board[newy/20][newx/20].equals(&quot;X&quot;) || board[newy/20][newx/20].equals(&quot;B&quot;) || distance &lt; 10) {</span>
+<span class="nc" id="L132">            respawn();</span>
+        }
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        else if(distance &gt; 10){</span>
+<span class="fc" id="L135">            this.x = newx;</span>
+<span class="fc" id="L136">            this.y = newy;</span>
+<span class="fc" id="L137">            targetX = this.x;</span>
+<span class="fc" id="L138">            targetY = this.y;</span>
+        }
+<span class="fc" id="L140">    }</span>
+
+    /**
+     * Draw the gremlin and its slime ball by the current frame
+     * @param app where to draw the sprites to
+     */
+    public void draw(App app) {
+<span class="fc" id="L147">        setDirection();</span>
+<span class="fc" id="L148">        move();</span>
+<span class="fc" id="L149">        app.image(this.sprite, this.x, this.y);</span>
+
+<span class="fc bfc" id="L151" title="All 2 branches covered.">        if(counter == enemyCooldown*60) {</span>
+<span class="fc" id="L152">            shootSlime(app);</span>
+<span class="fc" id="L153">            counter = 0;</span>
+        }
+
+<span class="fc bfc" id="L156" title="All 2 branches covered.">        for(int i=0; i&lt;slimes.size(); i++) {</span>
+<span class="fc" id="L157">            SlimeBall ball = slimes.get(i);</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">            if(ball.collided == false) {</span>
+<span class="fc" id="L159">                ball.draw(app);</span>
+            }
+            else {
+<span class="fc" id="L162">                slimes.remove(i);</span>
+            }
+        }
+
+<span class="fc" id="L166">        counter ++;</span>
+<span class="fc" id="L167">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

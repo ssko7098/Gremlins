@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Player.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">Player.java</span></div><h1>Player.java</h1><pre class="source lang-java linenums">package gremlins;
+
+import processing.core.PImage;
+import java.util.ArrayList;
+
+public class Player extends Entity{
+
+    /**
+     * The player's requested moving direction
+     */
+    public String requestedMovingDir;
+    private PImage wizardRight;
+    private PImage wizardLeft;
+    private PImage wizardUp;
+    private PImage wizardDown;
+
+    /**
+     * An array of fireball objects
+     */
+<span class="fc" id="L20">    public ArrayList&lt;Fireball&gt; fireballs = new ArrayList&lt;Fireball&gt;();</span>
+
+    /**
+     * An array of portal objects
+     */
+<span class="fc" id="L25">    public ArrayList&lt;Portal&gt; portals = new ArrayList&lt;Portal&gt;();</span>
+
+    /**
+     * The player's current number of lives
+     */
+    public int lives;
+
+    /**
+     * Marks the player's current invincible status
+     */
+<span class="fc" id="L35">    public boolean invincible = false;</span>
+
+    /**
+     * The player's fireball cooldown
+     */
+    public Double cooldown;
+
+    /**
+     * The counter used for the mana bar
+     */
+<span class="fc" id="L45">    public float counter = 150;</span>
+
+    /**
+     * The number of portals
+     */
+    public int portalCounter;
+
+    private PImage invincibleWizardRight;
+    private PImage invincibleWizardLeft;
+    private PImage invincibleWizardUp;
+    private PImage invincibleWizardDown;
+
+    public Player(int x, int y, App app, Map level, Double cooldown) {
+<span class="fc" id="L58">        super(x, y, level, app);</span>
+<span class="fc" id="L59">        this.wizardRight = app.loadImage(this.getClass().getResource(&quot;wizard1.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L60">        this.wizardLeft = app.loadImage(this.getClass().getResource(&quot;wizard0.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L61">        this.wizardUp = app.loadImage(this.getClass().getResource(&quot;wizard2.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L62">        this.wizardDown = app.loadImage(this.getClass().getResource(&quot;wizard3.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L63">        this.movingDirection = &quot;right&quot;;</span>
+<span class="fc" id="L64">        this.requestedMovingDir = null;</span>
+<span class="fc" id="L65">        this.board = level.map;</span>
+<span class="fc" id="L66">        this.level = level;</span>
+<span class="fc" id="L67">        speed = 2;</span>
+<span class="fc" id="L68">        targetY = level.getWizardTile()[1]*20;</span>
+<span class="fc" id="L69">        targetX = level.getWizardTile()[0]*20;</span>
+<span class="fc" id="L70">        lives = 3;</span>
+
+<span class="fc" id="L72">        this.invincibleWizardRight = app.loadImage(this.getClass().getResource(&quot;invincible_wizard1.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L73">        this.invincibleWizardLeft = app.loadImage(this.getClass().getResource(&quot;invincible_wizard0.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L74">        this.invincibleWizardUp = app.loadImage(this.getClass().getResource(&quot;invincible_wizard2.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L75">        this.invincibleWizardDown = app.loadImage(this.getClass().getResource(&quot;invincible_wizard3.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+
+<span class="fc" id="L77">        this.cooldown = cooldown;</span>
+<span class="fc" id="L78">    }</span>
+
+    /**
+     * Set the player's target position to the left
+     */
+    public void left() {
+<span class="pc bpc" id="L84" title="1 of 4 branches missed.">       if(this.x%20 == 0 &amp;&amp; y%20 == 0) {</span>
+<span class="fc" id="L85">            this.requestedMovingDir = &quot;left&quot;;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">            if(requestedMovingDir == &quot;left&quot;) {</span>
+<span class="pc bpc" id="L87" title="1 of 4 branches missed.">                if(!board[this.y/20][(this.x-20)/20].equals(&quot;X&quot;) &amp;&amp; !board[this.y/20][(this.x-20)/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L88">                    targetX = this.x - 20;</span>
+<span class="fc" id="L89">                    this.requestedMovingDir = &quot;idle&quot;;</span>
+                }
+<span class="fc" id="L91">                this.movingDirection = &quot;left&quot;;</span>
+            }  
+        }
+<span class="fc" id="L94">    }</span>
+
+    /**
+     * Set the player's target position to the right
+     */
+    public void right() {
+<span class="pc bpc" id="L100" title="1 of 4 branches missed.">        if (this.x%20 == 0 &amp;&amp; y%20 == 0) {</span>
+<span class="fc" id="L101">            this.requestedMovingDir = &quot;right&quot;;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">            if(requestedMovingDir == &quot;right&quot;) {</span>
+<span class="pc bpc" id="L103" title="1 of 4 branches missed.">                if(!board[this.y/20][(this.x+20)/20].equals(&quot;X&quot;) &amp;&amp; !board[this.y/20][(this.x+20)/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L104">                    targetX = this.x + 20;</span>
+<span class="fc" id="L105">                    this.requestedMovingDir = &quot;idle&quot;;</span>
+                }
+<span class="fc" id="L107">                this.movingDirection = &quot;right&quot;;</span>
+            }
+        }
+<span class="fc" id="L110">    }</span>
+
+    /**
+     * Set the player's target position upwards
+     */
+    public void up() {
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">        if(this.x%20 == 0 &amp;&amp; y%20 == 0) {</span>
+<span class="fc" id="L117">            this.requestedMovingDir = &quot;up&quot;;</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">            if(requestedMovingDir == &quot;up&quot;) {</span>
+<span class="fc bfc" id="L119" title="All 4 branches covered.">                if(!board[(this.y-20)/20][this.x/20].equals(&quot;X&quot;) &amp;&amp; !board[(this.y-20)/20][this.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L120">                    targetY = this.y - 20;</span>
+<span class="fc" id="L121">                    this.requestedMovingDir = &quot;idle&quot;;</span>
+                }
+<span class="fc" id="L123">                this.movingDirection = &quot;up&quot;;</span>
+            }
+        }
+<span class="fc" id="L126">    }</span>
+
+    /**
+     * Set the player's target position downwards
+     */
+    public void down() {
+<span class="pc bpc" id="L132" title="2 of 4 branches missed.">        if(this.x%20 == 0 &amp;&amp; y%20 == 0) {</span>
+<span class="fc" id="L133">            this.requestedMovingDir = &quot;down&quot;;</span>
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">            if(requestedMovingDir == &quot;down&quot;) {</span>
+<span class="pc bpc" id="L135" title="1 of 4 branches missed.">                if(!board[(this.y+20)/20][this.x/20].equals(&quot;X&quot;) &amp;&amp; !board[(this.y+20)/20][this.x/20].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L136">                    targetY = this.y + 20;</span>
+<span class="fc" id="L137">                    this.requestedMovingDir = &quot;idle&quot;;</span>
+                }
+<span class="fc" id="L139">                this.movingDirection = &quot;down&quot;;</span>
+            }
+        }
+<span class="fc" id="L142">    }</span>
+
+    /**
+     * Create a new fireball object
+     * @param app where to draw the fireball
+     */
+    public void shootFireball(App app) {
+<span class="fc" id="L149">        Fireball f = new Fireball(this.x, this.y, app, this.level);</span>
+<span class="fc" id="L150">        f.movingDirection = this.movingDirection;</span>
+<span class="fc" id="L151">        fireballs.add(f);</span>
+<span class="fc" id="L152">        counter = 0;</span>
+<span class="fc" id="L153">    }</span>
+
+    /**
+     * Create a new portal object
+     * @param app where to draw the portal
+     */
+    public void shootPortal(App app) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if(portalCounter &gt; 2){</span>
+<span class="fc" id="L161">            portals.remove(0);</span>
+<span class="fc" id="L162">            portalCounter --;</span>
+        }
+
+<span class="fc" id="L165">        Portal p = new Portal(this.x, this.y, this.level, app);</span>
+<span class="fc" id="L166">        p.movingDirection = this.movingDirection;</span>
+<span class="fc" id="L167">        p.targetX = this.x;</span>
+<span class="fc" id="L168">        p.targetY = this.y;</span>
+<span class="fc" id="L169">        portals.add(p);</span>
+<span class="fc" id="L170">    }</span>
+
+    /**
+     * Set the player's current sprite depending on its
+     * invincibility status and its requested moving direction.
+     */
+    public void setSprite() {
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        if(this.invincible == false) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">            if(this.movingDirection == &quot;right&quot;) {</span>
+<span class="fc" id="L179">                this.sprite = this.wizardRight;</span>
+            }
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            else if(this.movingDirection == &quot;left&quot;) {</span>
+<span class="fc" id="L182">                this.sprite = this.wizardLeft;</span>
+            }
+<span class="fc bfc" id="L184" title="All 2 branches covered.">            else if(this.movingDirection == &quot;up&quot;) {</span>
+<span class="fc" id="L185">                this.sprite = this.wizardUp;</span>
+            }
+<span class="fc bfc" id="L187" title="All 2 branches covered.">            else if(this.movingDirection == &quot;down&quot;) {</span>
+<span class="fc" id="L188">                this.sprite = this.wizardDown;</span>
+            }
+        }
+        else{
+<span class="fc bfc" id="L192" title="All 2 branches covered.">            if(this.movingDirection == &quot;right&quot;) {</span>
+<span class="fc" id="L193">                this.sprite = this.invincibleWizardRight;</span>
+            }
+<span class="fc bfc" id="L195" title="All 2 branches covered.">            else if(this.movingDirection == &quot;left&quot;) {</span>
+<span class="fc" id="L196">                this.sprite = this.invincibleWizardLeft;</span>
+            }
+<span class="fc bfc" id="L198" title="All 2 branches covered.">            else if(this.movingDirection == &quot;up&quot;) {</span>
+<span class="fc" id="L199">                this.sprite = this.invincibleWizardUp;</span>
+            }
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">            else if(this.movingDirection == &quot;down&quot;) {</span>
+<span class="fc" id="L202">                this.sprite = this.invincibleWizardDown;</span>
+            }
+        }
+<span class="fc" id="L205">    }</span>
+
+    /**
+     * Reset everything if the player loses a life
+     */
+    public void respawn() {
+<span class="fc" id="L211">        this.x = level.getWizardTile()[0]*20;</span>
+<span class="fc" id="L212">        this.y = level.getWizardTile()[1]*20;</span>
+<span class="fc" id="L213">        targetX = level.getWizardTile()[0]*20;</span>
+<span class="fc" id="L214">        targetY = level.getWizardTile()[1]*20;</span>
+<span class="fc" id="L215">        this.movingDirection = &quot;right&quot;;</span>
+<span class="fc" id="L216">        this.requestedMovingDir = null;</span>
+<span class="fc" id="L217">        this.counter = 150;</span>
+
+<span class="fc bfc" id="L219" title="All 2 branches covered.">        for(int i=0; i&lt;portals.size(); i++) {</span>
+<span class="fc" id="L220">            portals.get(i).isCast = false;</span>
+        }
+<span class="fc" id="L222">    }</span>
+
+    /**
+     * Draw the player and its projectiles by the current frame
+     * @param app where to draw everything
+     */
+    public void draw(App app) {
+<span class="fc" id="L229">        this.setSprite();</span>
+<span class="fc" id="L230">        this.move();</span>
+
+<span class="fc bfc" id="L232" title="All 2 branches covered.">        for(int i=0; i&lt;fireballs.size(); i++) {</span>
+<span class="fc" id="L233">            Fireball f = fireballs.get(i);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">            if(f.collided == false) {</span>
+<span class="fc" id="L235">                f.draw(app);</span>
+            }
+            else {
+<span class="fc" id="L238">                fireballs.remove(i);</span>
+            }
+        }
+
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        for(int j=0; j&lt;portals.size(); j++) {</span>
+<span class="fc" id="L243">            Portal p = portals.get(j);</span>
+<span class="fc" id="L244">            p.draw(app);</span>
+        }
+
+<span class="fc" id="L247">        app.image(this.sprite, this.x, this.y);</span>
+
+<span class="fc bfc" id="L249" title="All 2 branches covered.">        if(this.invincible == true) {</span>
+<span class="fc" id="L250">            app.image(this.sprite, this.x, this.y);</span>
+        }
+
+<span class="fc" id="L253">        counter += 150/(cooldown*60);</span>
+
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        if(counter &lt; 150) {</span>
+<span class="fc" id="L256">            app.fill(0, 0, 0);</span>
+<span class="fc" id="L257">            app.rect(550, 680, counter, 10);</span>
+<span class="fc" id="L258">            app.noFill();</span>
+<span class="fc" id="L259">            app.rect(550, 680, 150, 10);</span>
+        }
+
+<span class="fc" id="L262">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Map.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Project 1</a> &gt; <a href="index.source.html" class="el_package">gremlins</a> &gt; <span class="el_source">Map.java</span></div><h1>Map.java</h1><pre class="source lang-java linenums">package gremlins;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+import processing.core.PImage;
+
+public class Map {
+    
+    /**
+     * The width of the tile board
+     */
+<span class="fc" id="L15">    public int width = 36;</span>
+
+    /**
+     * The height of the tile board
+     */
+<span class="fc" id="L20">    public int height = 33;</span>
+
+    /**
+     * An array of the map loaded from the config file
+     */
+<span class="fc" id="L25">    public String[][] map = new String[height][width];</span>
+
+    /**
+     * The name of the level file
+     */
+    public String filename;
+    private Tile stonewall;
+    private Brickwall brickwall;
+    private PImage door;
+
+<span class="fc" id="L35">    public Map(App app, String filename) {</span>
+<span class="fc" id="L36">        this.filename = filename;</span>
+<span class="fc" id="L37">        stonewall = new Tile(&quot;stonewall.png&quot;, app);</span>
+<span class="fc" id="L38">        brickwall = new Brickwall(app);</span>
+<span class="fc" id="L39">        door = app.loadImage(this.getClass().getResource(&quot;door.png&quot;).getPath().replace(&quot;%20&quot;, &quot; &quot;));</span>
+<span class="fc" id="L40">    }</span>
+
+    /**
+     * Load the map from the specified file into an assorted array
+     * @return the assorted array
+     */
+    public String[][] loadMap() {
+        try{
+<span class="fc" id="L48">            File obj = new File(filename);</span>
+<span class="fc" id="L49">            ArrayList&lt;String[]&gt; lines = new ArrayList&lt;String[]&gt;();</span>
+<span class="fc" id="L50">            Scanner scan = new Scanner(obj);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            while(scan.hasNextLine()) {</span>
+<span class="fc" id="L52">                String[] tiles = scan.nextLine().split(&quot;&quot;);</span>
+
+<span class="fc" id="L54">                lines.add(tiles);</span>
+<span class="fc" id="L55">            }</span>
+<span class="fc" id="L56">            scan.close();</span>
+
+<span class="fc" id="L58">            int y = 0;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            for(String[] strArray : lines){</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                for(int x=0; x&lt;strArray.length; x++){</span>
+<span class="fc" id="L61">                    map[y][x] = strArray[x];</span>
+                }
+<span class="fc" id="L63">                y++;</span>
+<span class="fc" id="L64">            }</span>
+
+<span class="fc" id="L66">        }catch (FileNotFoundException e) {</span>
+<span class="fc" id="L67">            System.out.println(&quot;File not found!&quot;);</span>
+<span class="fc" id="L68">            e.printStackTrace();</span>
+<span class="fc" id="L69">        }</span>
+<span class="fc" id="L70">        return map;</span>
+    }
+
+    /**
+     * Load the wizard's start tile position
+     * @return the array storing this position
+     */
+    public int[] getWizardTile() {
+<span class="fc" id="L78">        int[] wizardTile = new int[2];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        for(int y=0; y&lt;33; y++) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            for(int x=0; x&lt;36; x++) {</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">                if(map[y][x].equals(&quot;W&quot;)) {</span>
+<span class="fc" id="L82">                    wizardTile[0] = x;</span>
+<span class="fc" id="L83">                    wizardTile[1] = y;</span>
+                }
+            }
+        }
+<span class="fc" id="L87">        return wizardTile;</span>
+    }
+
+    /**
+     * Load the gremlins's start tile position
+     * @return the array storing each gremlin's start position
+     */
+    public ArrayList&lt;int[]&gt; getGremlinTiles() {
+<span class="fc" id="L95">        ArrayList&lt;int[]&gt; gremlins = new ArrayList&lt;int[]&gt;();</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for(int y=0; y&lt;33; y++) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            for(int x=0; x&lt;36; x++) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                if(map[y][x].equals(&quot;G&quot;)) {</span>
+<span class="fc" id="L99">                    int[] gremlinTile = new int[2];</span>
+<span class="fc" id="L100">                    gremlinTile[0] = x;</span>
+<span class="fc" id="L101">                    gremlinTile[1] = y;</span>
+<span class="fc" id="L102">                    gremlins.add(gremlinTile);</span>
+                }
+            }
+        }
+<span class="fc" id="L106">        return gremlins;</span>
+    }
+
+    /**
+     * Load the powerup's start tile position
+     * @return the array storing the powerup's start position
+     */
+    public int[] getInvincibleTile() {
+<span class="fc" id="L114">        int[] invincibleTile = new int[2];</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for(int y=0; y&lt;33; y++) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            for(int x=0; x&lt;36; x++) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">                if(map[y][x].equals(&quot;I&quot;)) {</span>
+<span class="fc" id="L118">                    invincibleTile[0] = x;</span>
+<span class="fc" id="L119">                    invincibleTile[1] = y;</span>
+                }
+            }
+        }
+<span class="fc" id="L123">        return invincibleTile;</span>
+    }
+
+    /**
+     * Draw the map by the current frame
+     * @param app where to draw the sprites to
+     */
+    public void draw(App app) {
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for(int y=0; y&lt;33; y++){</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">            for(int x=0; x&lt;36; x++){</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">                if(map[y][x].equals(&quot;X&quot;)){</span>
+<span class="fc" id="L134">                    app.image(stonewall.getSprite(), x*20, y*20);</span>
+                }
+<span class="fc bfc" id="L136" title="All 2 branches covered.">                else if(map[y][x].equals(&quot;B&quot;)) {</span>
+<span class="fc" id="L137">                    app.image(brickwall.getSprite(), x*20, y*20);</span>
+                }
+<span class="fc bfc" id="L139" title="All 2 branches covered.">                else if(map[y][x].equals(&quot;E&quot;)) {</span>
+<span class="fc" id="L140">                    app.image(door, x*20, y*20);</span>
+                }
+            }
+        }
+<span class="fc" id="L144">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
